@@ -1,0 +1,65 @@
+import React from 'react'
+import Link, { withPrefix } from 'gatsby-link'
+import get from 'lodash/get'
+import Helmet from 'react-helmet'
+import Hero from '../components/hero'
+import ArticlePreview from '../components/article-preview'
+
+class RootIndex extends React.Component {
+  render() {
+    const siteTitle = get(this, 'props.data.site.siteMetadata.title')
+    const posts = get(this, 'props.data.allContentfulBlogPost.edges')
+    return (
+      <div className="site-wrapper">
+        <Helmet title={siteTitle} />
+          <div className="header ">
+            
+            <div className="header--hp">
+                <div className="header--hp__logo">
+                <img
+              className="logo__full"
+              src={withPrefix('images/logoRP.png')}
+              alt="Logo"
+            />
+                </div>
+                <div className="header--hp__sub">Lorem ipsum dolar set amit</div>
+            </div>
+          </div>
+          <div className="preview-container">
+          {posts.map(({ node }, idx) => {
+            return (
+                <ArticlePreview key={node.slug} article={node} />
+            )
+          })}
+          </div>
+      </div>
+    )
+  }
+}
+
+export default RootIndex
+
+export const pageQuery = graphql`
+  query HomeQuery {
+    allContentfulBlogPost(sort: { fields: [publishDate], order: DESC }) {
+      edges {
+        node {
+          title
+          slug
+          publishDate(formatString: "MMMM Do, YYYY")
+          contentType
+          heroImage {
+            file {
+              url
+            }
+          }
+          description {
+            childMarkdownRemark {
+              html
+            }
+          }
+        }
+      }
+    }
+  }
+`
